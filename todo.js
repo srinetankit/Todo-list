@@ -1,5 +1,3 @@
-//JavaScript
-
 //Variables
 const taskInput = document.querySelector(".task-input input"),
     filters = document.querySelectorAll(".filters span"),
@@ -11,18 +9,36 @@ let isEditable = false;
 
 let todos = JSON.parse(localStorage.getItem("todo-list"));
 
-//Step 7 filter function 
-filters.forEach(btn => {
-    btn.addEventListener("click", () => {
-        document.querySelector("span.active").classList.remove("active");
-        btn.classList.add("active");
-        showTodoList(btn.id);
-    })
+
+// Adding event listener
+taskInput.addEventListener("keyup", e => {
+    let userTask = taskInput.value.trim();
+
+    if (e.key == "Enter" && userTask) {
+
+        if (!isEditable) {
+
+            if (!todos) {
+                todos = [];
+            }
+            let taskInfo = { name: userTask, status: "pending" };
+            todos.push(taskInfo);
+        } else {
+            isEditable = false;
+            todos[editId].name = userTask;
+
+        }
+
+
+        taskInput.value = "";
+        localStorage.setItem("todo-list", JSON.stringify(todos));
+
+        // calling showTodoList function
+        showTodoList("all");
+    }
 })
 
-
-
-//Step 2 function to create todo list dynamic
+// function to create todo list dynamic
 function showTodoList(filter) {
     let liTag = "";
     if (todos) {
@@ -64,39 +80,7 @@ function showTodoList(filter) {
 }
 showTodoList("all");
 
-//Step 4 creating show menu function
-function showMenu(selectedTask) {
-    let menuDiv = selectedTask.parentElement.lastElementChild;
-    menuDiv.classList.add("show");
-
-    document.addEventListener("click", e => {
-        if (e.target.tagName != "I" || e.target != selectedTask) {
-            menuDiv.classList.remove("show");
-        }
-    })
-}
-
-
-
-
-//Step 6 function to edit any previous task
-function editTask(taskId, taskName) {
-    editId = taskId;
-    isEditable = true;
-    taskInput.value = taskName;
-}
-
-//Step 5 function to delete task
-function deleteTask(deleteId, filter) {
-    //Removing selected task todos/arr
-    todos.splice(deleteId, 1);
-    localStorage.setItem("todo-list", JSON.stringify(todos));
-    showTodoList(filter);
-}
-
-
-//Step 3 creating update status function
-
+// creating update status function
 function updateStatus(selectedTask) {
     let taskName = selectedTask.parentElement.lastElementChild;
     if (selectedTask.checked) {
@@ -109,37 +93,47 @@ function updateStatus(selectedTask) {
     localStorage.setItem("todo-list", JSON.stringify(todos));
 }
 
-//Step 8 function to clear all tasks from list
+// creating show menu function
+function showMenu(selectedTask) {
+    let menuDiv = selectedTask.parentElement.lastElementChild;
+    menuDiv.classList.add("show");
+
+    document.addEventListener("click", e => {
+        if (e.target.tagName != "I" || e.target != selectedTask) {
+            menuDiv.classList.remove("show");
+        }
+    })
+}
+
+// function to delete task
+function deleteTask(deleteId, filter) {
+    //Removing selected task todos/arr
+    todos.splice(deleteId, 1);
+    localStorage.setItem("todo-list", JSON.stringify(todos));
+    showTodoList(filter);
+}
+
+// function to edit any previous task
+function editTask(taskId, taskName) {
+    editId = taskId;
+    isEditable = true;
+    taskInput.value = taskName;
+}
+
+
+// filter function 
+filters.forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelector("span.active").classList.remove("active");
+        btn.classList.add("active");
+        showTodoList(btn.id);
+    })
+})
+
+// function to clear all tasks from list
 clearAll.addEventListener("click", () => {
     todos.splice(0, todos.length);
     localStorage.setItem("todo-list", JSON.stringify(todos));
     showTodoList("all");
 })
 
-//Step 1 
-taskInput.addEventListener("keyup", e => {
-    let userTask = taskInput.value.trim();
-
-    if (e.key == "Enter" && userTask) {
-
-        if (!isEditable) {
-
-            if (!todos) {
-                todos = [];
-            }
-            let taskInfo = { name: userTask, status: "pending" };
-            todos.push(taskInfo);
-        } else {
-            isEditable = false;
-            todos[editId].name = userTask;
-
-        }
-
-
-        taskInput.value = "";
-        localStorage.setItem("todo-list", JSON.stringify(todos));
-
-        // calling showTodoList function
-        showTodoList("all");
-    }
-})
